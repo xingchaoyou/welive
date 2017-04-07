@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+	<constant name="struts.devMode" value="true"></constant>
+	<package name="webpage" namespace="/" extends="struts-default">
+		<interceptors>
+			<!-- 在自定义interceptor并将其ref时, 系统会覆盖掉默认的interceptor-stack(defaultStack),为了保证系统默认的defaultStack不受影响, 我们需要显式的将其引入 -->
+			<!-- 注意两个interceptor-ref的顺序, 顺序不同, 执行效果也不同: 先配置的先执行/后配置的先退出(先进后出) -->
+			<interceptor name="mytimer" class="interceptor.TimerInterceptor" />
+			<interceptor-stack name="authenticationStack">
+				<interceptor-ref name="mytimer" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
+		</interceptors>
+			<!-- 此默认interceptor是针对所有action的 -->
+			<!-- 如果某个action中引入了interceptor, 则在这个action中此默认interceptor就会失效 -->
+		<default-interceptor-ref name="authenticationStack" />
+		<action name="login" class="action.UserAction" method="login">
+			<result>pages/success.jsp</result>
+			<result name="input">pages/login.jsp</result>
+			<result name="fail">pages/fail.jsp</result>
+		</action>
+	</package>
+</struts>
